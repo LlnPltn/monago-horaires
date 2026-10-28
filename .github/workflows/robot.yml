@@ -1,0 +1,43 @@
+name: Horaires Ligurie
+on:
+  schedule:
+    - cron: "17 5 * * 1"   # chaque lundi
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  telecharger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Télécharger les horaires (open data Regione Liguria, CC BY 4.0)
+        run: |
+          python3 - <<'PY'
+          import json, urllib.request, hashlib, os, time, datetime
+          os.makedirs('data', exist_ok=True)
+          def get(url, t=300):
+              for i in range(4):
+                  try:
+                      return urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'MonaGo-horaires'}), timeout=t).read()
+                  except Exception as e:
+                      print('essai', i + 1, url, e); time.sleep(20)
+              raise SystemExit('injoignable : ' + url)
+          for ds, nom in [('ds-637', 'trenitalia-liguria'), ('ds-639', 'riviera-trasporti')]:
+              meta = json.loads(get('https://dati.regione.liguria.it/api/3/action/package_show?id=' + ds, 60))['result']
+              res = [r for r in meta['resources'] if '/GTFS/' in r['url'] and not r['url'].endswith('fares.zip')]
+              url = res[0]['url']
+              z = get(url)
+              open(f'data/{nom}.zip', 'wb').write(z)
+              json.dump({'source': url, 'jeu': ds, 'titre': meta.get('title'), 'licence': 'CC BY 4.0 - Regione Liguria',
+                         'sha256': hashlib.sha256(z).hexdigest(), 'octets': len(z),
+                         'verifie_le': datetime.date.today().isoformat()}, open(f'data/{nom}.json', 'w'), ensure_ascii=False, indent=1)
+              print(nom, len(z), url)
+          PY
+      - name: Compacter pour MonaGo (gares de Taggia à Vintimille)
+        run: python3 italie.py data/trenitalia-liguria.zip data/italie.json
+      - name: Enregistrer si quelque chose a changé
+        run: |
+          git config user.name "monago-robot"
+          git config user.email "monago-robot@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet -- data/*.zip data/italie.json || git commit -m "Horaires mis à jour $(date +%F)" && git push || true
