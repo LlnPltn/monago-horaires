@@ -1,0 +1,9 @@
+{
+ "source": "https://srvcarto.regione.liguria.it/dtuff/download_statico/opendata/trasporti/GTFS/GTFS-IT-ITC3-TRENITALIA-20260614-20261212-pf.zip",
+ "jeu": "ds-637",
+ "titre": "Dati servizio pianificato TRENITALIA S.p.A.",
+ "licence": "CC BY 4.0 - Regione Liguria",
+ "sha256": "2df530ba65826c29b3417a3e2983f23d2ce51a09ced30a68825a0f4acaa489af",
+ "octets": 26482803,
+ "verifie_le": "2026-10-28"
+}

@@ -1,0 +1,9 @@
+{
+ "source": "https://srvcarto.regione.liguria.it/dtuff/download_statico/opendata/trasporti/GTFS/GTFS-IT-ITC3-RT-20250915-20260614_6.zip",
+ "jeu": "ds-639",
+ "titre": "Dati servizio pianificato RIVIERA TRASPORTI S.p.A.",
+ "licence": "CC BY 4.0 - Regione Liguria",
+ "sha256": "b79be9d068739a89fec3ab6ec619e0aec1ef7681c81cd5b8470bc7b711e08bff",
+ "octets": 3662669,
+ "verifie_le": "2026-10-28"
+}
